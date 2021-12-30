@@ -1,13 +1,39 @@
-from django.shortcuts import HttpResponse
+from django.shortcuts import HttpResponse, get_object_or_404
 from api.models import Article
 from api.serializers import ArticleSerializer
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import serializers, status, generics, mixins
 from rest_framework.decorators import APIView
+from rest_framework import viewsets
 # Create your views here.
 
 
+class ArticleViewSet(viewsets.ModelViewSet):
+    queryset = Article.objects.all()
+    serializer_class = ArticleSerializer
+
+    def list(self, request):
+        articles = Article.objects.all()
+        serializer = ArticleSerializer(articles, many=True)
+        print('is this work?')
+        return Response(serializer.data)
+
+    # def create(self, request):
+    #     serializer = ArticleSerializer(data=request.data)
+    #     if serializer.is_valid():
+    #         serializer.save()
+    #         return Response(serializer.data, status=status.HTTP_201_CREATED)
+    #     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    # def retrieve(self, request, pk=None):
+    #     queryset = Article.objects.all()
+    #     article = get_object_or_404(queryset, pk=pk)
+    #     serializer = ArticleSerializer(article)
+    #     return Response(serializer.data)
+
+
+'''
 class ArticleList(generics.GenericAPIView, mixins.ListModelMixin, mixins.CreateModelMixin):
     queryset = Article.objects.all()
     serializer_class = ArticleSerializer
@@ -35,6 +61,7 @@ class ArticleDetail(generics.GenericAPIView, mixins.RetrieveModelMixin, mixins.U
         return self.destroy(request, id=id)
 
 
+'''
 '''
 @api_view(['GET', 'POST'])
 def article_list(request):
