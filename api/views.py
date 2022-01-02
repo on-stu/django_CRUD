@@ -1,23 +1,33 @@
 from django.shortcuts import HttpResponse, get_object_or_404
 from api.models import Article
-from api.serializers import ArticleSerializer
-from rest_framework.decorators import api_view
+from api.serializers import ArticleSerializer, UserSerializer
+from rest_framework.decorators import api_view, authentication_classes, permission_classes
 from rest_framework.response import Response
 from rest_framework import serializers, status, generics, mixins
 from rest_framework.decorators import APIView
 from rest_framework import viewsets
+from rest_framework.permissions import IsAuthenticated
+from django.contrib.auth.models import User
+from rest_framework.authentication import TokenAuthentication
 # Create your views here.
+
+
+class UserViewSet(viewsets.ModelViewSet):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
 
 
 class ArticleViewSet(viewsets.ModelViewSet):
     queryset = Article.objects.all()
     serializer_class = ArticleSerializer
+    permission_classes = [IsAuthenticated]
+    authentication_classes = (TokenAuthentication,)
 
-    def list(self, request):
-        articles = Article.objects.all()
-        serializer = ArticleSerializer(articles, many=True)
-        print('is this work?')
-        return Response(serializer.data)
+    # def list(self, request):
+    #     articles = Article.objects.all()
+    #     serializer = ArticleSerializer(articles, many=True)
+    #     print('is this work?')
+    #     return Response(serializer.data)
 
     # def create(self, request):
     #     serializer = ArticleSerializer(data=request.data)
